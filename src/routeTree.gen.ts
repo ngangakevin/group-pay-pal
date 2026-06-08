@@ -9,38 +9,234 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SplitTypeRouteImport } from './routes/split-type'
+import { Route as ReviewRouteImport } from './routes/review'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ParticipantsRouteImport } from './routes/participants'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as GroupsRouteImport } from './routes/groups'
+import { Route as CreateRouteImport } from './routes/create'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettleIdRouteImport } from './routes/settle.$id'
+import { Route as CollectionIdRouteImport } from './routes/collection.$id'
+import { Route as SuccessIdPidRouteImport } from './routes/success.$id.$pid'
+import { Route as PayIdPidRouteImport } from './routes/pay.$id.$pid'
 
+const SplitTypeRoute = SplitTypeRouteImport.update({
+  id: '/split-type',
+  path: '/split-type',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewRoute = ReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParticipantsRoute = ParticipantsRouteImport.update({
+  id: '/participants',
+  path: '/participants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsRoute = GroupsRouteImport.update({
+  id: '/groups',
+  path: '/groups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateRoute = CreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettleIdRoute = SettleIdRouteImport.update({
+  id: '/settle/$id',
+  path: '/settle/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionIdRoute = CollectionIdRouteImport.update({
+  id: '/collection/$id',
+  path: '/collection/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuccessIdPidRoute = SuccessIdPidRouteImport.update({
+  id: '/success/$id/$pid',
+  path: '/success/$id/$pid',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayIdPidRoute = PayIdPidRouteImport.update({
+  id: '/pay/$id/$pid',
+  path: '/pay/$id/$pid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
+  '/groups': typeof GroupsRoute
+  '/notifications': typeof NotificationsRoute
+  '/participants': typeof ParticipantsRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
+  '/split-type': typeof SplitTypeRoute
+  '/collection/$id': typeof CollectionIdRoute
+  '/settle/$id': typeof SettleIdRoute
+  '/pay/$id/$pid': typeof PayIdPidRoute
+  '/success/$id/$pid': typeof SuccessIdPidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
+  '/groups': typeof GroupsRoute
+  '/notifications': typeof NotificationsRoute
+  '/participants': typeof ParticipantsRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
+  '/split-type': typeof SplitTypeRoute
+  '/collection/$id': typeof CollectionIdRoute
+  '/settle/$id': typeof SettleIdRoute
+  '/pay/$id/$pid': typeof PayIdPidRoute
+  '/success/$id/$pid': typeof SuccessIdPidRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
+  '/groups': typeof GroupsRoute
+  '/notifications': typeof NotificationsRoute
+  '/participants': typeof ParticipantsRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
+  '/split-type': typeof SplitTypeRoute
+  '/collection/$id': typeof CollectionIdRoute
+  '/settle/$id': typeof SettleIdRoute
+  '/pay/$id/$pid': typeof PayIdPidRoute
+  '/success/$id/$pid': typeof SuccessIdPidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/create'
+    | '/groups'
+    | '/notifications'
+    | '/participants'
+    | '/profile'
+    | '/review'
+    | '/split-type'
+    | '/collection/$id'
+    | '/settle/$id'
+    | '/pay/$id/$pid'
+    | '/success/$id/$pid'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/create'
+    | '/groups'
+    | '/notifications'
+    | '/participants'
+    | '/profile'
+    | '/review'
+    | '/split-type'
+    | '/collection/$id'
+    | '/settle/$id'
+    | '/pay/$id/$pid'
+    | '/success/$id/$pid'
+  id:
+    | '__root__'
+    | '/'
+    | '/create'
+    | '/groups'
+    | '/notifications'
+    | '/participants'
+    | '/profile'
+    | '/review'
+    | '/split-type'
+    | '/collection/$id'
+    | '/settle/$id'
+    | '/pay/$id/$pid'
+    | '/success/$id/$pid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CreateRoute: typeof CreateRoute
+  GroupsRoute: typeof GroupsRoute
+  NotificationsRoute: typeof NotificationsRoute
+  ParticipantsRoute: typeof ParticipantsRoute
+  ProfileRoute: typeof ProfileRoute
+  ReviewRoute: typeof ReviewRoute
+  SplitTypeRoute: typeof SplitTypeRoute
+  CollectionIdRoute: typeof CollectionIdRoute
+  SettleIdRoute: typeof SettleIdRoute
+  PayIdPidRoute: typeof PayIdPidRoute
+  SuccessIdPidRoute: typeof SuccessIdPidRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/split-type': {
+      id: '/split-type'
+      path: '/split-type'
+      fullPath: '/split-type'
+      preLoaderRoute: typeof SplitTypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/review': {
+      id: '/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/participants': {
+      id: '/participants'
+      path: '/participants'
+      fullPath: '/participants'
+      preLoaderRoute: typeof ParticipantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups': {
+      id: '/groups'
+      path: '/groups'
+      fullPath: '/groups'
+      preLoaderRoute: typeof GroupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create': {
+      id: '/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +244,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settle/$id': {
+      id: '/settle/$id'
+      path: '/settle/$id'
+      fullPath: '/settle/$id'
+      preLoaderRoute: typeof SettleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collection/$id': {
+      id: '/collection/$id'
+      path: '/collection/$id'
+      fullPath: '/collection/$id'
+      preLoaderRoute: typeof CollectionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/success/$id/$pid': {
+      id: '/success/$id/$pid'
+      path: '/success/$id/$pid'
+      fullPath: '/success/$id/$pid'
+      preLoaderRoute: typeof SuccessIdPidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay/$id/$pid': {
+      id: '/pay/$id/$pid'
+      path: '/pay/$id/$pid'
+      fullPath: '/pay/$id/$pid'
+      preLoaderRoute: typeof PayIdPidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CreateRoute: CreateRoute,
+  GroupsRoute: GroupsRoute,
+  NotificationsRoute: NotificationsRoute,
+  ParticipantsRoute: ParticipantsRoute,
+  ProfileRoute: ProfileRoute,
+  ReviewRoute: ReviewRoute,
+  SplitTypeRoute: SplitTypeRoute,
+  CollectionIdRoute: CollectionIdRoute,
+  SettleIdRoute: SettleIdRoute,
+  PayIdPidRoute: PayIdPidRoute,
+  SuccessIdPidRoute: SuccessIdPidRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
