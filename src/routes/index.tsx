@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle2, Sparkles, TrendingUp, Users } from "lucide-re
 import { MobileShell, Avatar } from "@/components/MobileShell";
 import { Progress } from "@/components/ui/progress";
 import { useApp, fmt } from "@/lib/store";
+import vodacomMpesaLogo from "@/assets/vodacom-mpesa.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
