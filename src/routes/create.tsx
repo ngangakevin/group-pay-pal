@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/lib/store";
 
 export const Route = createFileRoute("/create")({
-  head: () => ({ meta: [{ title: "Create Split — Split Pay" }] }),
+  head: () => ({ meta: [{ title: "Create Split — Pagamos" }] }),
   component: CreatePage,
 });
 

@@ -7,7 +7,7 @@ import { useApp, fmt } from "@/lib/store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/review")({
-  head: () => ({ meta: [{ title: "Review Split — Split Pay" }] }),
+  head: () => ({ meta: [{ title: "Review Split — Pagamos" }] }),
   component: ReviewPage,
 });
 
@@ -82,7 +82,7 @@ function ReviewPage() {
 
         <p className="flex items-center gap-2 justify-center text-xs text-muted-foreground">
           <ShieldCheck className="size-4 text-success" />
-          Powered by Vodacom M-Pesa · Funds held securely
+          Funds held securely in escrow
         </p>
       </div>
 

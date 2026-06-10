@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useApp, fmt } from "@/lib/store";
 
 export const Route = createFileRoute("/pay/$id/$pid")({
-  head: () => ({ meta: [{ title: "Pay Share — Split Pay" }] }),
+  head: () => ({ meta: [{ title: "Pay Share — Pagamos" }] }),
   component: PayPage,
 });
 

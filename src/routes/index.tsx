@@ -3,13 +3,14 @@ import { ArrowRight, CheckCircle2, Sparkles, TrendingUp, Users } from "lucide-re
 import { MobileShell, Avatar } from "@/components/MobileShell";
 import { Progress } from "@/components/ui/progress";
 import { useApp, fmt } from "@/lib/store";
+import vodacomMpesaLogo from "@/assets/vodacom-mpesa.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Split Pay — Group payments made simple" },
+      { title: "Pagamos — Group payments made simple" },
       { name: "description", content: "Split bills, collect contributions, and settle merchants from your phone." },
-      { property: "og:title", content: "Split Pay" },
+      { property: "og:title", content: "Pagamos" },
       { property: "og:description", content: "Pay together. Effortlessly. Securely." },
     ],
   }),
@@ -35,8 +36,10 @@ function Dashboard() {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-white/70">Split Pay</p>
-            <p className="text-xs text-white/90 font-medium">Vodacom · M-Pesa</p>
+            <p className="text-[10px] uppercase tracking-wider text-white/70">Pagamos</p>
+            <div className="mt-1 bg-white rounded-md px-2 py-1 inline-flex items-center justify-center">
+              <img src={vodacomMpesaLogo.url} alt="Vodacom M-Pesa" className="h-5 w-auto" />
+            </div>
           </div>
         </div>
 
