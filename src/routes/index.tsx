@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2, Sparkles, TrendingUp, Users } from "lucide-re
 import { MobileShell, Avatar } from "@/components/MobileShell";
 import { Progress } from "@/components/ui/progress";
 import { useApp, fmt } from "@/lib/store";
-import vodacomMpesaLogo from "@/assets/vodacom-mpesa.png.asset.json";
+import { MpesaIcon } from "@/components/MpesaIcon";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,8 +37,8 @@ function Dashboard() {
           </div>
           <div className="text-right">
             <p className="text-[10px] uppercase tracking-wider text-white/70">Pagamos</p>
-            <div className="mt-1 bg-white rounded-md px-2 py-1 inline-flex items-center justify-center">
-              <img src={vodacomMpesaLogo.url} alt="Vodacom M-Pesa" className="h-5 w-auto" />
+            <div className="mt-1 inline-flex items-center justify-center">
+              <MpesaIcon size={36} />
             </div>
           </div>
         </div>

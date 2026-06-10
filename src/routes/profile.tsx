@@ -4,7 +4,7 @@ import { MobileShell, ScreenHeader, Avatar } from "@/components/MobileShell";
 import { Switch } from "@/components/ui/switch";
 import { useApp, fmt } from "@/lib/store";
 import { useEffect, useState } from "react";
-import vodacomMpesaLogo from "@/assets/vodacom-mpesa.png.asset.json";
+import { MpesaIcon } from "@/components/MpesaIcon";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profile — Pagamos" }] }),
@@ -58,9 +58,7 @@ function ProfilePage() {
         </button>
 
         <div className="mt-4 flex flex-col items-center gap-2">
-          <div className="bg-white rounded-md px-3 py-1.5 inline-flex items-center justify-center border border-border">
-            <img src={vodacomMpesaLogo.url} alt="Vodacom M-Pesa" className="h-6 w-auto" />
-          </div>
+          <MpesaIcon size={56} />
           <p className="text-center text-[10px] text-muted-foreground">Pagamos v1.0</p>
         </div>
       </div>
