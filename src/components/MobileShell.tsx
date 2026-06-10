@@ -20,7 +20,7 @@ const tabs = [
 ] as const;
 
 export function MobileShell({ children, hideNav, hideFab }: Props) {
-  const pathname = useRouterState((s) => s.location.pathname);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const unread = useApp((s) => s.notifications.filter((n) => !n.read).length);
   const setDraft = useApp((s) => s.setDraft);
   const resetDraft = useApp((s) => s.resetDraft);
