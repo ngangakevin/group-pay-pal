@@ -31,6 +31,11 @@ export interface Collection {
   createdAt: string;
   participants: Participant[];
   reference?: string;
+  journey?: Journey;
+  paybillNumber?: string;
+  accountNumber?: string;
+  tillNumber?: string;
+  remark?: string;
 }
 
 export interface SavedGroup {
