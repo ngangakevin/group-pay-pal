@@ -7,9 +7,9 @@ import { useApp, fmt } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Split Pay — Group payments made simple" },
+      { title: "Pagamos — Group payments made simple" },
       { name: "description", content: "Split bills, collect contributions, and settle merchants from your phone." },
-      { property: "og:title", content: "Split Pay" },
+      { property: "og:title", content: "Pagamos" },
       { property: "og:description", content: "Pay together. Effortlessly. Securely." },
     ],
   }),
@@ -35,8 +35,8 @@ function Dashboard() {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-white/70">Split Pay</p>
-            <p className="text-xs text-white/90 font-medium">Vodacom · M-Pesa</p>
+            <img src="/assets/android-icon-48x48.png"/>
+            <p className="text-[10px] uppercase tracking-wider text-white/70">Pagamos</p>
           </div>
         </div>
 

@@ -6,7 +6,7 @@ import { useApp, fmt } from "@/lib/store";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Profile — Split Pay" }] }),
+  head: () => ({ meta: [{ title: "Profile — Pagamos" }] }),
   component: ProfilePage,
 });
 
@@ -57,7 +57,7 @@ function ProfilePage() {
         </button>
 
         <p className="text-center text-[10px] text-muted-foreground mt-4">
-          Split Pay v1.0 · Powered by Vodacom M-Pesa
+          Pagamos v1.0 · Powered by Vodacom M-Pesa
         </p>
       </div>
     </MobileShell>
