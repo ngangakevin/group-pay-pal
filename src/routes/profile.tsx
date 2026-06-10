@@ -4,6 +4,7 @@ import { MobileShell, ScreenHeader, Avatar } from "@/components/MobileShell";
 import { Switch } from "@/components/ui/switch";
 import { useApp, fmt } from "@/lib/store";
 import { useEffect, useState } from "react";
+import vodacomMpesaLogo from "@/assets/vodacom-mpesa.png.asset.json";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profile — Pagamos" }] }),
