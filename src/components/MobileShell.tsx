@@ -20,8 +20,19 @@ const tabs = [
 ] as const;
 
 export function MobileShell({ children, hideNav, hideFab }: Props) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname = useRouterState((s) => s.location.pathname);
   const unread = useApp((s) => s.notifications.filter((n) => !n.read).length);
+  const setDraft = useApp((s) => s.setDraft);
+  const resetDraft = useApp((s) => s.resetDraft);
+  const navigate = useNavigate();
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const pick = (journey: "PAYBILL" | "BUY_GOODS") => {
+    resetDraft();
+    setDraft({ journey });
+    setPickerOpen(false);
+    navigate({ to: "/create" });
+  };
 
   return (
     <div className="min-h-screen w-full bg-app-bg flex justify-center">
@@ -31,13 +42,14 @@ export function MobileShell({ children, hideNav, hideFab }: Props) {
         {!hideNav && (
           <>
             {!hideFab && (
-              <Link
-                to="/create"
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
                 aria-label="Create split bill"
                 className="absolute bottom-20 right-4 z-20 size-14 rounded-full brand-gradient text-brand-foreground shadow-lg shadow-brand/30 flex items-center justify-center active:scale-95 transition"
               >
                 <Plus className="size-6" strokeWidth={2.5} />
-              </Link>
+              </button>
             )}
             <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-card/95 backdrop-blur border-t border-border z-10">
               <ul className="grid grid-cols-4">
