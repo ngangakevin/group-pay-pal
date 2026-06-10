@@ -3,6 +3,7 @@ import { create } from "zustand";
 export type ParticipantStatus = "INVITED" | "PENDING" | "PAID" | "DECLINED";
 export type CollectionStatus = "DRAFT" | "ACTIVE" | "COMPLETE" | "SETTLED" | "CANCELLED";
 export type SplitType = "EQUAL" | "CUSTOM";
+export type Journey = "PAYBILL" | "BUY_GOODS";
 
 export interface Participant {
   id: string;
