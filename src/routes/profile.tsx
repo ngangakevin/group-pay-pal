@@ -56,9 +56,12 @@ function ProfilePage() {
           <LogOut className="size-4" /> Sign out
         </button>
 
-        <p className="text-center text-[10px] text-muted-foreground mt-4">
-          Pagamos v1.0 · Powered by Vodacom M-Pesa
-        </p>
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <div className="bg-white rounded-md px-3 py-1.5 inline-flex items-center justify-center border border-border">
+            <img src={vodacomMpesaLogo.url} alt="Vodacom M-Pesa" className="h-6 w-auto" />
+          </div>
+          <p className="text-center text-[10px] text-muted-foreground">Pagamos v1.0</p>
+        </div>
       </div>
     </MobileShell>
   );
