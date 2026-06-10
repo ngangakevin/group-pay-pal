@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Receipt, Store } from "lucide-react";
 import { MobileShell, ScreenHeader } from "@/components/MobileShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,20 +16,33 @@ export const Route = createFileRoute("/create")({
 function CreatePage() {
   const navigate = useNavigate();
   const { draft, setDraft } = useApp();
+  const journey = draft.journey ?? "PAYBILL";
+  const isPaybill = journey === "PAYBILL";
+
   const [billName, setBillName] = useState(draft.billName ?? "");
-  const [merchant, setMerchant] = useState(draft.merchantName ?? "");
-  const [description, setDescription] = useState(draft.description ?? "");
+  const [paybillName, setPaybillName] = useState(draft.merchantName ?? "");
+  const [accountNumber, setAccountNumber] = useState(draft.accountNumber ?? "");
+  const [tillNumber, setTillNumber] = useState(draft.tillNumber ?? "");
+  const [remark, setRemark] = useState(draft.remark ?? draft.description ?? "");
   const [amount, setAmount] = useState(draft.totalAmount ? String(draft.totalAmount) : "");
   const [currency, setCurrency] = useState(draft.currency ?? "MZN");
 
-  const valid = billName.trim() && merchant.trim() && Number(amount) > 0;
+  const valid =
+    billName.trim() &&
+    Number(amount) > 0 &&
+    (isPaybill ? paybillName.trim() && accountNumber.trim() : tillNumber.trim());
 
   const onContinue = () => {
     if (!valid) return;
     setDraft({
+      journey,
       billName,
-      merchantName: merchant,
-      description,
+      merchantName: isPaybill ? paybillName : `Till ${tillNumber}`,
+      paybillNumber: isPaybill ? paybillName : undefined,
+      accountNumber: isPaybill ? accountNumber : undefined,
+      tillNumber: isPaybill ? undefined : tillNumber,
+      remark,
+      description: remark,
       totalAmount: Number(amount),
       currency,
     });
@@ -37,10 +51,39 @@ function CreatePage() {
 
   return (
     <MobileShell hideNav>
-      <ScreenHeader title="New split bill" subtitle="Step 1 of 4 · Bill details" back="/" variant="brand" />
+      <ScreenHeader
+        title={isPaybill ? "Pay a bill" : "Buy goods"}
+        subtitle="Step 1 of 4 · Payment details"
+        back="/"
+        variant="brand"
+      />
       <Stepper step={1} />
-      <div className="px-5 pt-2 space-y-5 flex-1">
-        <Field label="Bill name">
+
+      <div className="px-5 pt-3 flex-1 space-y-5">
+        <div className="bg-card border border-border rounded-2xl p-3 flex items-center gap-3">
+          <div className="size-10 rounded-xl brand-gradient text-brand-foreground flex items-center justify-center">
+            {isPaybill ? <Receipt className="size-5" /> : <Store className="size-5" />}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
+              {isPaybill ? "Paybill journey" : "Buy goods journey"}
+            </p>
+            <p className="text-sm font-medium truncate">
+              {isPaybill ? "Pay a business using paybill & account" : "Pay a merchant using till number"}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setDraft({ journey: isPaybill ? "BUY_GOODS" : "PAYBILL" });
+            }}
+            className="text-xs font-semibold text-brand"
+          >
+            Switch
+          </button>
+        </div>
+
+        <Field label="Pagamos bill name">
           <Input
             value={billName}
             onChange={(e) => setBillName(e.target.value)}
@@ -48,22 +91,39 @@ function CreatePage() {
             className="h-12 text-base"
           />
         </Field>
-        <Field label="Merchant name">
-          <Input
-            value={merchant}
-            onChange={(e) => setMerchant(e.target.value)}
-            placeholder="e.g. Ocean Restaurant"
-            className="h-12 text-base"
-          />
-        </Field>
-        <Field label="Description" optional>
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Add a note for participants"
-            rows={3}
-          />
-        </Field>
+
+        {isPaybill ? (
+          <>
+            <Field label="Paybill name">
+              <Input
+                value={paybillName}
+                onChange={(e) => setPaybillName(e.target.value)}
+                placeholder="e.g. EDM, Movitel, DSTV"
+                className="h-12 text-base"
+              />
+            </Field>
+            <Field label="Account number">
+              <Input
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value.replace(/\s/g, ""))}
+                placeholder="e.g. 123456789"
+                inputMode="numeric"
+                className="h-12 text-base"
+              />
+            </Field>
+          </>
+        ) : (
+          <Field label="Till number">
+            <Input
+              value={tillNumber}
+              onChange={(e) => setTillNumber(e.target.value.replace(/\D/g, ""))}
+              placeholder="e.g. 552211"
+              inputMode="numeric"
+              className="h-12 text-base"
+            />
+          </Field>
+        )}
+
         <div className="grid grid-cols-3 gap-3">
           <div className="col-span-1">
             <Label className="text-xs font-medium text-muted-foreground">Currency</Label>
@@ -79,7 +139,7 @@ function CreatePage() {
             </select>
           </div>
           <div className="col-span-2">
-            <Label className="text-xs font-medium text-muted-foreground">Total amount</Label>
+            <Label className="text-xs font-medium text-muted-foreground">Amount</Label>
             <Input
               value={amount}
               onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))}
@@ -89,13 +149,26 @@ function CreatePage() {
             />
           </div>
         </div>
+
+        <Field label="Remark" optional>
+          <Textarea
+            value={remark}
+            onChange={(e) => setRemark(e.target.value)}
+            placeholder="Add a note for participants"
+            rows={3}
+          />
+        </Field>
       </div>
 
       <FooterActions>
         <Button variant="outline" className="flex-1 h-12" onClick={() => navigate({ to: "/" })}>
           Cancel
         </Button>
-        <Button className="flex-[2] h-12 bg-brand text-brand-foreground hover:bg-brand/90" disabled={!valid} onClick={onContinue}>
+        <Button
+          className="flex-[2] h-12 bg-brand text-brand-foreground hover:bg-brand/90"
+          disabled={!valid}
+          onClick={onContinue}
+        >
           Continue
         </Button>
       </FooterActions>
@@ -109,16 +182,22 @@ export function Stepper({ step }: { step: 1 | 2 | 3 | 4 }) {
       {[1, 2, 3, 4].map((i) => (
         <div
           key={i}
-          className={
-            "h-1 flex-1 rounded-full " + (i <= step ? "bg-brand" : "bg-muted")
-          }
+          className={"h-1 flex-1 rounded-full " + (i <= step ? "bg-brand" : "bg-muted")}
         />
       ))}
     </div>
   );
 }
 
-export function Field({ label, optional, children }: { label: string; optional?: boolean; children: React.ReactNode }) {
+export function Field({
+  label,
+  optional,
+  children,
+}: {
+  label: string;
+  optional?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <Label className="text-xs font-medium text-muted-foreground">
