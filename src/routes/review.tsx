@@ -82,7 +82,7 @@ function ReviewPage() {
 
         <p className="flex items-center gap-2 justify-center text-xs text-muted-foreground">
           <ShieldCheck className="size-4 text-success" />
-          Powered by Vodacom M-Pesa · Funds held securely
+          Funds held securely in escrow
         </p>
       </div>
 
