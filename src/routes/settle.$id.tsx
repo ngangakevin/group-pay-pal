@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useApp, fmt } from "@/lib/store";
 
 export const Route = createFileRoute("/settle/$id")({
-  head: () => ({ meta: [{ title: "Settle Merchant — Split Pay" }] }),
+  head: () => ({ meta: [{ title: "Settle Merchant — Pagamos" }] }),
   component: SettlePage,
 });
 

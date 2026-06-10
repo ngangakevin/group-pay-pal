@@ -78,10 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Split Pay — Pay together, effortlessly" },
+      { title: "Pagamos — Pay together, effortlessly" },
       { name: "description", content: "Split bills, collect contributions, and settle merchants from your phone with M-Pesa Group Pay." },
       { name: "theme-color", content: "#E60000" },
-      { property: "og:title", content: "Split Pay" },
+      { property: "og:title", content: "Pagamos" },
       { property: "og:description", content: "Pay together. Effortlessly. Securely." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

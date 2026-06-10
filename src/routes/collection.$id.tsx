@@ -11,7 +11,7 @@ import { useApp, fmt, type ParticipantStatus } from "@/lib/store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/collection/$id")({
-  head: () => ({ meta: [{ title: "Live Collection — Split Pay" }] }),
+  head: () => ({ meta: [{ title: "Live Collection — Pagamos" }] }),
   component: CollectionPage,
 });
 

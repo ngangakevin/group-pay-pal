@@ -7,7 +7,7 @@ import { useApp, fmt } from "@/lib/store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/review")({
-  head: () => ({ meta: [{ title: "Review Split — Split Pay" }] }),
+  head: () => ({ meta: [{ title: "Review Split — Pagamos" }] }),
   component: ReviewPage,
 });
 
