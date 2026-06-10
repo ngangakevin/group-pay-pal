@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useApp, fmt } from "@/lib/store";
 
 export const Route = createFileRoute("/settle/$id")({
-  head: () => ({ meta: [{ title: "Settle Merchant — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Settle Merchant — Split Pay" }] }),
   component: SettlePage,
 });
 
@@ -96,7 +96,7 @@ function SettlePage() {
             />
           </div>
           <div>
-            <Label className="text-xs font-medium text-muted-foreground">Merchant Till Number</Label>
+            <Label className="text-xs font-medium text-muted-foreground">Merchant name</Label>
             <Input value={c.merchantName} readOnly className="mt-1.5 h-12 bg-muted" />
           </div>
         </div>

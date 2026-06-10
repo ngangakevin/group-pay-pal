@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/lib/store";
 
 export const Route = createFileRoute("/create")({
-  head: () => ({ meta: [{ title: "Create Split — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Create Split — Split Pay" }] }),
   component: CreatePage,
 });
 
@@ -48,11 +48,11 @@ function CreatePage() {
             className="h-12 text-base"
           />
         </Field>
-        <Field label="Merchant Till Number">
+        <Field label="Merchant name">
           <Input
             value={merchant}
             onChange={(e) => setMerchant(e.target.value)}
-            placeholder="e.g. 12345"
+            placeholder="e.g. Ocean Restaurant"
             className="h-12 text-base"
           />
         </Field>

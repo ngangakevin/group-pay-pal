@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useApp, fmt } from "@/lib/store";
 
 export const Route = createFileRoute("/success/$id/$pid")({
-  head: () => ({ meta: [{ title: "Payment Successful — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Payment Successful — Split Pay" }] }),
   component: SuccessPage,
 });
 

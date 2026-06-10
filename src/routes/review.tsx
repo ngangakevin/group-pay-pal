@@ -7,7 +7,7 @@ import { useApp, fmt } from "@/lib/store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/review")({
-  head: () => ({ meta: [{ title: "Review Split — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Review Split — Split Pay" }] }),
   component: ReviewPage,
 });
 
@@ -25,7 +25,7 @@ function ReviewPage() {
   const onStart = () => {
     const id = createCollection();
     toast.success("Collection started", { description: "Invitations sent to participants" });
-    navigate({ to: "/" });
+    navigate({ to: "/collection/$id", params: { id } });
   };
 
   return (

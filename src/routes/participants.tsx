@@ -8,7 +8,7 @@ import { Stepper, FooterActions } from "./create";
 import { useApp, fmt } from "@/lib/store";
 
 export const Route = createFileRoute("/participants")({
-  head: () => ({ meta: [{ title: "Add Participants — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Add Participants — Split Pay" }] }),
   component: ParticipantsPage,
 });
 

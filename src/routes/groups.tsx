@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { useApp } from "@/lib/store";
 
 export const Route = createFileRoute("/groups")({
-  head: () => ({ meta: [{ title: "Saved Groups — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Saved Groups — Split Pay" }] }),
   component: GroupsPage,
 });
 

@@ -7,7 +7,7 @@ import { Stepper, FooterActions } from "./create";
 import { useApp, fmt } from "@/lib/store";
 
 export const Route = createFileRoute("/split-type")({
-  head: () => ({ meta: [{ title: "Split Type — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Split Type — Split Pay" }] }),
   component: SplitTypePage,
 });
 

@@ -5,7 +5,7 @@ import { MobileShell, ScreenHeader } from "@/components/MobileShell";
 import { useApp, type AppNotification } from "@/lib/store";
 
 export const Route = createFileRoute("/notifications")({
-  head: () => ({ meta: [{ title: "Notifications — Pagamos" }] }),
+  head: () => ({ meta: [{ title: "Notifications — Split Pay" }] }),
   component: NotificationsPage,
 });
 
