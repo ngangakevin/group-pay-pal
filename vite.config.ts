@@ -13,7 +13,7 @@ export default defineConfig({
         "9f0d-2c0f-fe38-2412-74b3-5492-c39c-b869-cfa9.ngrok-free.app",
         "6957-41-90-137-232.ngrok-free.app",
         "pagamos.vercel.app",
-        "group-pay-d894cy7v1-ngangakevins-projects.vercel.app",
+        "*.vercel.app",
       ],
     },
   },
