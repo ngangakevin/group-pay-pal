@@ -46,8 +46,8 @@ function SettlePage() {
           </div>
 
           <div className="mt-8 bg-card border border-border rounded-2xl divide-y divide-border">
-            <Row k="Merchant" v={updated.merchantName} />
-            <Row k="Till" v={till} mono />
+            <Row k="Merchant" v="Ocean Breeze Resturant" />
+            <Row k="Till" v={updated.merchantName} mono />
             <Row k="Reference" v={updated.reference ?? "—"} mono />
             <Row k="Contributors" v={String(updated.participants.filter(p => p.status === "PAID").length)} />
             <Row k="Time" v={new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })} />
@@ -88,7 +88,7 @@ function SettlePage() {
           <div>
             <Label className="text-xs font-medium text-muted-foreground">Merchant till number</Label>
             <Input
-              value={till}
+              value={c.merchantName}
               onChange={(e) => setTill(e.target.value.replace(/\D/g, ""))}
               inputMode="numeric"
               className="mt-1.5 h-14 text-lg font-mono tracking-widest text-center"
