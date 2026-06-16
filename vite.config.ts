@@ -10,7 +10,7 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   vite: {
     plugins: [react()],
-    base: "/repository-name/",
+    base: "/group-pay-pal/",
     server: {
       allowedHosts: [
         "9f0d-2c0f-fe38-2412-74b3-5492-c39c-b869-cfa9.ngrok-free.app",
