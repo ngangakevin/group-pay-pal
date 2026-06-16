@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload dist folder explicitly
-          path: './dist' # 👈 Perfect, this targets Vite's build output
+          path: './dist/client' # 👈 Perfect, this targets Vite's build output
           
       - name: Deploy to GitHub Pages
         id: deployment
