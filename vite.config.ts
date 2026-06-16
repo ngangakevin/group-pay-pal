@@ -12,7 +12,7 @@ export default defineConfig({
       allowedHosts: [
         "9f0d-2c0f-fe38-2412-74b3-5492-c39c-b869-cfa9.ngrok-free.app",
         "6957-41-90-137-232.ngrok-free.app",
-        "pagamos.vercel.app",
+        "pagamos.github.io",
         "*.vercel.app",
       ],
     },
