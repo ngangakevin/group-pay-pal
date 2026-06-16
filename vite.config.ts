@@ -5,9 +5,12 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   vite: {
+    plugins: [react()],
+    base: "/repository-name/",
     server: {
       allowedHosts: [
         "9f0d-2c0f-fe38-2412-74b3-5492-c39c-b869-cfa9.ngrok-free.app",
