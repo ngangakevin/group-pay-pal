@@ -15,7 +15,7 @@ function ReviewPage() {
   const navigate = useNavigate();
   const { draft, contacts, createCollection } = useApp();
 
-  if (!draft.totalAmount || !draft.participantIds?.length) return <Navigate to="/create" />;
+  if (!draft.totalAmount || !draft.participantIds?.length) return <Navigate to="/" />;
 
   const total = draft.totalAmount ?? 0;
   const currency = draft.currency ?? "MZN";
