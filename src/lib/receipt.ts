@@ -13,7 +13,7 @@ export type ReceiptData = {
 export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   const pdfDoc = await PDFDocument.create();
 
-  // Set explicit mobile viewport proportions
+  // Explicit mobile viewport proportions
   const page = pdfDoc.addPage([420, 680]);
   const { width, height } = page.getSize();
 
@@ -57,7 +57,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   // 2. TYPOGRAPHY LAYER
   // ==========================================
 
-  // "Merchant paid" header
   const title = "Merchant paid";
   const titleSize = 24;
   const titleWidth = helvBold.widthOfTextAtSize(title, titleSize);
@@ -70,7 +69,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   });
   cursor -= titleSize + 8;
 
-  // "Settlement successful" subtitle
   const subtitle = "Settlement successful";
   const subSize = 13;
   const subWidth = helv.widthOfTextAtSize(subtitle, subSize);
@@ -83,7 +81,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   });
   cursor -= 40;
 
-  // Big amount string
   const amountText =
     `${data.currency ?? "MZN"} ${Number(data.amount).toLocaleString("en-US", { minimumFractionDigits: 0 })}`.trim();
   const amountSize = 38;
@@ -97,7 +94,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   });
   cursor -= amountSize + 8;
 
-  // "to merchant" subtitle context
   const toText = `to ${data.till ?? "—"}`;
   const toSize = 11;
   const toWidth = helv.widthOfTextAtSize(toText, toSize);
@@ -111,7 +107,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   cursor -= toSize + 35;
 
   // ==========================================
-  // 3. TRUE ROUNDED DETAILS CARD MAPPING
+  // 3. SEAMLESS ROUNDED DETAILS CARD
   // ==========================================
   const cardX = margin;
   const cardW = width - margin * 2;
@@ -127,89 +123,49 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
 
   const cardH = rows.length * rowH;
   const cardY = cursor - cardH;
-  const r = 16; // Corner radius matching your UI
+  const r = 16; // Corner radius
   const borderColor = rgb(0.88, 0.89, 0.91);
 
-  // Draw the central white background block body
+  // Draw white background
   page.drawRectangle({
-    x: cardX,
+    x: cardX + r,
     y: cardY,
-    width: cardW,
+    width: cardW - r * 2,
     height: cardH,
     color: rgb(1, 1, 1),
   });
+  page.drawRectangle({
+    x: cardX,
+    y: cardY + r,
+    width: cardW,
+    height: cardH - r * 2,
+    color: rgb(1, 1, 1),
+  });
+  // Fill inside corners
+  page.drawCircle({ x: cardX + r, y: cardY + r, radius: r, color: rgb(1, 1, 1) });
+  page.drawCircle({ x: cardX + cardW - r, y: cardY + r, radius: r, color: rgb(1, 1, 1) });
+  page.drawCircle({ x: cardX + r, y: cardY + cardH - r, radius: r, color: rgb(1, 1, 1) });
+  page.drawCircle({ x: cardX + cardW - r, y: cardY + cardH - r, radius: r, color: rgb(1, 1, 1) });
 
-  // Clear out the harsh square corners to prepare for bezier drawing masks
-  const clearSquareCorner = (cx: number, cy: number) => {
-    page.drawRectangle({ x: cx, y: cy, width: r, height: r, color: rgb(1, 1, 1) });
-  };
-  clearSquareCorner(cardX, cardY + cardH - r);
-  clearSquareCorner(cardX + cardW - r, cardY + cardH - r);
-  clearSquareCorner(cardX, cardY);
-  clearSquareCorner(cardX + cardW - r, cardY);
+  // Single SVG path command to trace perfect borders with rounded corners
+  // M = Move to, L = Line to, A = Arc to (for true rounded corners)
+  const borderPath = `
+    M ${cardX + r} ${cardY} 
+    L ${cardX + cardW - r} ${cardY} 
+    A ${r} ${r} 0 0 0 ${cardX + cardW} ${cardY + r} 
+    L ${cardX + cardW} ${cardY + cardH - r} 
+    A ${r} ${r} 0 0 0 ${cardX + cardW - r} ${cardY + cardH} 
+    L ${cardX + r} ${cardY + cardH} 
+    A ${r} ${r} 0 0 0 ${cardX} ${cardY + cardH - r} 
+    L ${cardX} ${cardY + r} 
+    A ${r} ${r} 0 0 0 ${cardX + r} ${cardY} Z
+  `.trim();
 
-  // Smooth out and draw true curved vector corner borders
-  // Top-Left Curve
-  page.drawBezierCurve({
-    start: { x: cardX, y: cardY + cardH - r },
-    control1: { x: cardX, y: cardY + cardH },
-    control2: { x: cardX + r, y: cardY + cardH },
-    end: { x: cardX + r, y: cardY + cardH },
-    thickness: 1,
-    color: borderColor,
-  });
-  // Top-Right Curve
-  page.drawBezierCurve({
-    start: { x: cardX + cardW - r, y: cardY + cardH },
-    control1: { x: cardX + cardW, y: cardY + cardH },
-    control2: { x: cardX + cardW, y: cardY + cardH - r },
-    end: { x: cardX + cardW, y: cardY + cardH - r },
-    thickness: 1,
-    color: borderColor,
-  });
-  // Bottom-Right Curve
-  page.drawBezierCurve({
-    start: { x: cardX + cardW, y: cardY + r },
-    control1: { x: cardX + cardW, y: cardY },
-    control2: { x: cardX + cardW - r, y: cardY },
-    end: { x: cardX + cardW - r, y: cardY },
-    thickness: 1,
-    color: borderColor,
-  });
-  // Bottom-Left Curve
-  page.drawBezierCurve({
-    start: { x: cardX + r, y: cardY },
-    control1: { x: cardX, y: cardY },
-    control2: { x: cardX, y: cardY + r },
-    end: { x: cardX, y: cardY + r },
-    thickness: 1,
-    color: borderColor,
-  });
-
-  // Flat straight boundary outline line rules linking the curves
-  page.drawLine({
-    start: { x: cardX + r, y: cardY + cardH },
-    end: { x: cardX + cardW - r, y: cardY + cardH },
-    thickness: 1,
-    color: borderColor,
-  });
-  page.drawLine({
-    start: { x: cardX + r, y: cardY },
-    end: { x: cardX + cardW - r, y: cardY },
-    thickness: 1,
-    color: borderColor,
-  });
-  page.drawLine({
-    start: { x: cardX, y: cardY + r },
-    end: { x: cardX, y: cardY + cardH - r },
-    thickness: 1,
-    color: borderColor,
-  });
-  page.drawLine({
-    start: { x: cardX + cardW, y: cardY + r },
-    end: { x: cardX + cardW, y: cardY + cardH - r },
-    thickness: 1,
-    color: borderColor,
+  page.drawSvgPath(borderPath, {
+    x: 0,
+    y: 0,
+    borderColor: borderColor,
+    borderWidth: 1,
   });
 
   // ==========================================
@@ -219,11 +175,9 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
 
   for (let i = 0; i < rows.length; i++) {
     const [label, val] = rows[i];
-
-    // Precise typography baseline centering offset inside row container
     const textBaseY = currentRowTopY - rowH / 2 - 4;
 
-    // Label alignment (Stays left-aligned at exactly 16px inset padding)
+    // Left label alignment
     page.drawText(label, {
       x: cardX + 16,
       y: textBaseY,
@@ -232,18 +186,18 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
       color: rgb(0.45, 0.48, 0.52),
     });
 
-    // Content alignment (Calculates width dynamically to snap right at 16px inset padding)
+    // Right value alignment (snaps precisely 16px from the right boundary edge)
     const valSize = 13;
     const valWidth = helvBold.widthOfTextAtSize(val, valSize);
     page.drawText(val, {
-      x: cardX + cardW - 16 - valWidth, // 👈 Perfect alignment bounding rule
+      x: cardX + cardW - 16 - valWidth,
       y: textBaseY,
       size: valSize,
       font: helvBold,
       color: rgb(0.05, 0.05, 0.05),
     });
 
-    // Interior structural dividing rules
+    // Inner dividing borders between table rows
     if (i < rows.length - 1) {
       page.drawLine({
         start: { x: cardX, y: currentRowTopY - rowH },
@@ -256,7 +210,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     currentRowTopY -= rowH;
   }
 
-  // Final compile operations
+  // Compile layout
   const pdfBytes = await pdfDoc.save();
   const arrayBuffer = pdfBytes.buffer.slice(
     pdfBytes.byteOffset,
