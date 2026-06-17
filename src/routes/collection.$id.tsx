@@ -43,7 +43,7 @@ function CollectionPage() {
       const fresh = useApp.getState().collections.find((x) => x.id === id);
       const pending = fresh?.participants.find((p) => p.status === "PENDING");
       if (pending) payShare(id, pending.id);
-    }, 3000);
+    }, 2000);
     return () => clearInterval(t);
   }, [id, c?.status, payShare, c]);
 

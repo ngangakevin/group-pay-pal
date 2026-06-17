@@ -14,7 +14,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   const pdfDoc = await PDFDocument.create();
 
   // Explicit mobile viewport proportions (Tall card canvas)
-  const page = pdfDoc.addPage([420, 740]); // 💡 Slightly taller canvas to allow comfortable spacing
+  const page = pdfDoc.addPage([420, 760]); // 💡 Bumped to 760 for extra total vertical breathing room
   const { width, height } = page.getSize();
 
   const helv = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -27,7 +27,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   // 1. SUCCESS CHECKMARK DIAL (VECTOR)
   // ==========================================
   const circleCenterX = width / 2;
-  const circleY = cursor - 65; // 💡 Positioned clean from the top margin
+  const circleY = height - 100; // 💡 Pin the circle center exactly 100px from the absolute top edge
   const circleRadius = 45;
 
   page.drawCircle({
@@ -51,9 +51,10 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     color: rgb(1, 1, 1),
   });
 
-  // 🚨 THE CRITICAL FIX: Push the cursor down significantly further past the edge of the circle
-  // Circle center is at circleY, bottom edge is at (circleY - circleRadius) -> 65px lower than that provides perfect clearance.
-  cursor = circleY - circleRadius - 55;
+  // 🚨 THE DEFINITIVE FIX: Drop the text baseline down significantly further.
+  // The bottom of the circle sits at height - 145. Placing the cursor at height - 220
+  // leaves an absolute 75px wide clear safety buffer zone.
+  cursor = height - 220;
 
   // ==========================================
   // 2. TYPOGRAPHY LAYER
@@ -70,7 +71,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helvBold,
     color: rgb(0.05, 0.05, 0.05),
   });
-  cursor -= titleSize + 12; // 💡 More breathing room between title and status
+  cursor -= titleSize + 16; // Extra padding below header
 
   // "Settlement successful" subtitle
   const subtitle = "Settlement successful";
@@ -83,7 +84,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helv,
     color: rgb(0.45, 0.48, 0.52),
   });
-  cursor -= 45; // 💡 Clean offset separation before drawing the large currency amount
+  cursor -= 50; // Clean gap before big currency rendering
 
   // Big amount string
   const amountText =
@@ -97,7 +98,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helvBold,
     color: rgb(0.85, 0.15, 0.12),
   });
-  cursor -= amountSize + 10;
+  cursor -= amountSize + 12;
 
   // "to merchant" subtitle context
   const toText = `to ${data.till ?? "—"}`;
@@ -110,7 +111,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helv,
     color: rgb(0.45, 0.48, 0.52),
   });
-  cursor -= toSize + 40; // 💡 Ensures a crisp, empty block before table box start
+  cursor -= toSize + 45; // Space before table box start
 
   // ==========================================
   // 3. SEAMLESS ROUNDED DETAILS CARD
