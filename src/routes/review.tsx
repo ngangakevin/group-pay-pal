@@ -25,7 +25,7 @@ function ReviewPage() {
   const onStart = () => {
     const id = createCollection();
     toast.success("Collection started", { description: "Invitations sent to participants" });
-    navigate({ to: "/collection/$id", params: { id } });
+    navigate({ to: "/" });
   };
 
   return (
