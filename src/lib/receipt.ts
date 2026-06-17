@@ -13,8 +13,8 @@ export type ReceiptData = {
 export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   const pdfDoc = await PDFDocument.create();
 
-  // Explicit mobile viewport proportions
-  const page = pdfDoc.addPage([420, 680]);
+  // Explicit mobile viewport proportions (Tall card canvas)
+  const page = pdfDoc.addPage([420, 740]); // 💡 Slightly taller canvas to allow comfortable spacing
   const { width, height } = page.getSize();
 
   const helv = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -27,7 +27,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   // 1. SUCCESS CHECKMARK DIAL (VECTOR)
   // ==========================================
   const circleCenterX = width / 2;
-  const circleY = cursor - 60;
+  const circleY = cursor - 65; // 💡 Positioned clean from the top margin
   const circleRadius = 45;
 
   page.drawCircle({
@@ -51,12 +51,15 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     color: rgb(1, 1, 1),
   });
 
-  cursor = circleY - circleRadius - 30;
+  // 🚨 THE CRITICAL FIX: Push the cursor down significantly further past the edge of the circle
+  // Circle center is at circleY, bottom edge is at (circleY - circleRadius) -> 65px lower than that provides perfect clearance.
+  cursor = circleY - circleRadius - 55;
 
   // ==========================================
   // 2. TYPOGRAPHY LAYER
   // ==========================================
 
+  // "Merchant paid" header
   const title = "Merchant paid";
   const titleSize = 24;
   const titleWidth = helvBold.widthOfTextAtSize(title, titleSize);
@@ -67,8 +70,9 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helvBold,
     color: rgb(0.05, 0.05, 0.05),
   });
-  cursor -= titleSize + 8;
+  cursor -= titleSize + 12; // 💡 More breathing room between title and status
 
+  // "Settlement successful" subtitle
   const subtitle = "Settlement successful";
   const subSize = 13;
   const subWidth = helv.widthOfTextAtSize(subtitle, subSize);
@@ -79,8 +83,9 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helv,
     color: rgb(0.45, 0.48, 0.52),
   });
-  cursor -= 40;
+  cursor -= 45; // 💡 Clean offset separation before drawing the large currency amount
 
+  // Big amount string
   const amountText =
     `${data.currency ?? "MZN"} ${Number(data.amount).toLocaleString("en-US", { minimumFractionDigits: 0 })}`.trim();
   const amountSize = 38;
@@ -92,8 +97,9 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helvBold,
     color: rgb(0.85, 0.15, 0.12),
   });
-  cursor -= amountSize + 8;
+  cursor -= amountSize + 10;
 
+  // "to merchant" subtitle context
   const toText = `to ${data.till ?? "—"}`;
   const toSize = 11;
   const toWidth = helv.widthOfTextAtSize(toText, toSize);
@@ -104,7 +110,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helv,
     color: rgb(0.45, 0.48, 0.52),
   });
-  cursor -= toSize + 35;
+  cursor -= toSize + 40; // 💡 Ensures a crisp, empty block before table box start
 
   // ==========================================
   // 3. SEAMLESS ROUNDED DETAILS CARD
@@ -126,7 +132,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   const r = 16;
   const borderColor = rgb(0.88, 0.89, 0.91);
 
-  // Background rect block fills
+  // Background fills
   page.drawRectangle({
     x: cardX + r,
     y: cardY,
@@ -146,7 +152,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   page.drawCircle({ x: cardX + r, y: cardY + cardH - r, radius: r, color: rgb(1, 1, 1) });
   page.drawCircle({ x: cardX + cardW - r, y: cardY + cardH - r, radius: r, color: rgb(1, 1, 1) });
 
-  // 🚨 FIXED: Explicitly string-clean numeric paths. No line breaks or floating spaces.
   const x0 = cardX.toFixed(1);
   const x1 = (cardX + r).toFixed(1);
   const x2 = (cardX + cardW - r).toFixed(1);
