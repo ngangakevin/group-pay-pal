@@ -28,7 +28,7 @@ function CollectionPage() {
       const fresh = useApp.getState().collections.find((x) => x.id === id);
       const pending = fresh?.participants.find((p) => p.status === "PENDING");
       if (pending) payShare(id, pending.id);
-    }, 8000);
+    }, 3000);
     return () => clearInterval(t);
   }, [id, c?.status, payShare, c]);
 
