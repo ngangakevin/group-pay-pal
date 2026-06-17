@@ -12,8 +12,9 @@ export type ReceiptData = {
 
 export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   const pdfDoc = await PDFDocument.create();
-  // Mobile-ish tall page
-  const page = pdfDoc.addPage([420, 760]);
+
+  // Set explicit mobile viewport proportions
+  const page = pdfDoc.addPage([420, 680]);
   const { width, height } = page.getSize();
 
   const helv = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -22,56 +23,58 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   const margin = 28;
   let cursor = height - margin;
 
-  // Draw success circle with check
+  // ==========================================
+  // 1. DRAW SUCCESS CHECKMARK DIAL (VECTOR)
+  // ==========================================
   const circleCenterX = width / 2;
-  const circleY = cursor - 36;
-  const outerR = 60;
-  // outer pale ring (use ellipse)
-  page.drawEllipse({
+  const circleY = cursor - 60;
+  const circleRadius = 45;
+
+  // Outer green circle background
+  page.drawCircle({
     x: circleCenterX,
     y: circleY,
-    xScale: outerR + 18,
-    yScale: outerR + 18,
-    color: rgb(0.92, 0.98, 0.96),
+    radius: circleRadius,
+    color: rgb(0.29, 0.68, 0.43), // Rich green matching the screenshot
   });
-  // inner green circle
-  page.drawEllipse({
-    x: circleCenterX,
-    y: circleY,
-    xScale: outerR,
-    yScale: outerR,
-    color: rgb(0.0, 0.66, 0.36),
+
+  // Pure mathematical vector lines to draw the white checkmark inside the circle
+  // This bypasses font-encoding errors entirely
+  page.drawLine({
+    start: { x: circleCenterX - 18, y: circleY - 2 },
+    end: { x: circleCenterX - 5, y: circleY - 15 },
+    thickness: 5,
+    color: rgb(1, 1, 1),
   });
-  // checkmark using a glyph
-  const checkSize = 42;
-  const checkText = "✅";
-  const checkWidth = helvBold.widthOfTextAtSize(checkText, checkSize);
-  page.drawText(checkText, {
-    x: circleCenterX - checkWidth / 2,
-    y: circleY - checkSize / 3,
-    size: checkSize,
-    font: helvBold,
+  page.drawLine({
+    start: { x: circleCenterX - 6.5, y: circleY - 15 },
+    end: { x: circleCenterX + 20, y: circleY + 12 },
+    thickness: 5,
     color: rgb(1, 1, 1),
   });
 
-  cursor = circleY - outerR - 10;
+  cursor = circleY - circleRadius - 30;
 
-  // Title
+  // ==========================================
+  // 2. TEXT TYPOGRAPHY LAYER
+  // ==========================================
+
+  // "Merchant paid" header
   const title = "Merchant paid";
-  const titleSize = 18;
+  const titleSize = 24;
   const titleWidth = helvBold.widthOfTextAtSize(title, titleSize);
   page.drawText(title, {
     x: (width - titleWidth) / 2,
     y: cursor,
     size: titleSize,
     font: helvBold,
-    color: rgb(0, 0, 0),
+    color: rgb(0.05, 0.05, 0.05),
   });
-  cursor -= titleSize + 6;
+  cursor -= titleSize + 8;
 
-  // subtitle
+  // "Settlement successful" subtitle
   const subtitle = "Settlement successful";
-  const subSize = 10;
+  const subSize = 13;
   const subWidth = helv.widthOfTextAtSize(subtitle, subSize);
   page.drawText(subtitle, {
     x: (width - subWidth) / 2,
@@ -80,24 +83,25 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helv,
     color: rgb(0.45, 0.48, 0.52),
   });
-  cursor -= 24;
+  cursor -= 40;
 
-  // Amount big red
-  const amountText = `${data.currency ?? ""} ${Number(data.amount).toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
-  const amountSize = 34;
+  // "MZN 5,000" big red amount
+  const amountText =
+    `${data.currency ?? "MZN"} ${Number(data.amount).toLocaleString("en-US", { minimumFractionDigits: 0 })}`.trim();
+  const amountSize = 38;
   const amountWidth = helvBold.widthOfTextAtSize(amountText, amountSize);
   page.drawText(amountText, {
     x: (width - amountWidth) / 2,
     y: cursor,
     size: amountSize,
     font: helvBold,
-    color: rgb(0.85, 0.09, 0.12),
+    color: rgb(0.85, 0.15, 0.12),
   });
-  cursor -= amountSize + 6;
+  cursor -= amountSize + 8;
 
-  // to merchant small
-  const toText = `to ${data.merchantName}`;
-  const toSize = 10;
+  // "to 1234" context label
+  const toText = `to ${data.till ?? "—"}`;
+  const toSize = 11;
   const toWidth = helv.widthOfTextAtSize(toText, toSize);
   page.drawText(toText, {
     x: (width - toWidth) / 2,
@@ -106,24 +110,28 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     font: helv,
     color: rgb(0.45, 0.48, 0.52),
   });
-  cursor -= toSize + 20;
+  cursor -= toSize + 35;
 
-  // Details rounded card
+  // ==========================================
+  // 3. ROUNDED RECEIPT DETAILS CARD
+  // ==========================================
   const cardX = margin;
   const cardW = width - margin * 2;
-  const rowH = 36;
+  const rowH = 48; // Roomy height matching design spacing
+
   const rows = [
     ["Merchant", data.merchantName],
     ["Till", data.till ?? "—"],
     ["Reference", data.reference ?? "—"],
     ["Contributors", String(data.contributors ?? 0)],
-    ["Time", data.time ?? new Date().toLocaleString()],
+    ["Time", data.time ?? "—"],
   ];
-  const cardH = rows.length * rowH + 16;
-  const cardY = cursor - cardH;
 
-  // Card background and border (rounded)
-  // Draw card background (rounded corners not directly supported; draw rectangle with a subtle border)
+  const cardH = rows.length * rowH;
+  const cardY = cursor - cardH;
+  const radius = 16; // Corner rounding matching the border layout
+
+  // Draw card background
   page.drawRectangle({
     x: cardX,
     y: cardY,
@@ -131,67 +139,92 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     height: cardH,
     color: rgb(1, 1, 1),
   });
-  // border: draw slightly inset rectangle stroke
-  page.drawRectangle({
-    x: cardX + 0.4,
-    y: cardY + 0.4,
-    width: cardW - 0.8,
-    height: cardH - 0.8,
-    borderWidth: 0.8,
-    borderColor: rgb(0.88, 0.88, 0.9),
-    color: undefined,
+
+  // Render vector paths for true rounded borders
+  // Top left
+  page.drawCircle({ x: cardX + radius, y: cardY + cardH - radius, radius, color: rgb(1, 1, 1) });
+  // Top right
+  page.drawCircle({
+    x: cardX + cardW - radius,
+    y: cardY + cardH - radius,
+    radius,
+    color: rgb(1, 1, 1),
+  });
+  // Bottom left
+  page.drawCircle({ x: cardX + radius, y: cardY + radius, radius, color: rgb(1, 1, 1) });
+  // Bottom right
+  page.drawCircle({ x: cardX + cardW - radius, y: cardY + radius, radius, color: rgb(1, 1, 1) });
+
+  // Draw outer outline border strokes around corners manually to support complete styles
+  const borderColor = rgb(0.88, 0.89, 0.91);
+  page.drawLine({
+    start: { x: cardX + radius, y: cardY + cardH },
+    end: { x: cardX + cardW - radius, y: cardY + cardH },
+    thickness: 1,
+    color: borderColor,
+  });
+  page.drawLine({
+    start: { x: cardX + radius, y: cardY },
+    end: { x: cardX + cardW - radius, y: cardY },
+    thickness: 1,
+    color: borderColor,
+  });
+  page.drawLine({
+    start: { x: cardX, y: cardY + radius },
+    end: { x: cardX, y: cardY + cardH - radius },
+    thickness: 1,
+    color: borderColor,
+  });
+  page.drawLine({
+    start: { x: cardX + cardW, y: cardY + radius },
+    end: { x: cardX + cardW, y: cardY + cardH - radius },
+    thickness: 1,
+    color: borderColor,
   });
 
-  // Draw rows
-  let ry = cardY + cardH - 12 - rowH + 6;
+  // ==========================================
+  // 4. MAP DATA ROWS INSIDE CONTAINER
+  // ==========================================
+  let currentRowTopY = cardY + cardH;
+
   for (let i = 0; i < rows.length; i++) {
-    const [k, v] = rows[i];
-    // label
-    page.drawText(k, {
-      x: cardX + 12,
-      y: ry + 10,
-      size: 10,
+    const [label, val] = rows[i];
+    const textBaseY = currentRowTopY - rowH / 2 - 4;
+
+    // Label styling (Left aligned, muted gray text)
+    page.drawText(label, {
+      x: cardX + 16,
+      y: textBaseY,
+      size: 13,
       font: helv,
       color: rgb(0.45, 0.48, 0.52),
     });
-    // value right-aligned
-    const valSize = k === "Time" ? 10 : 12;
-    const fontToUse = k === "Time" ? helvBold : helvBold;
-    const valWidth = fontToUse.widthOfTextAtSize(v, valSize);
-    page.drawText(v, {
-      x: cardX + cardW - 12 - valWidth,
-      y: ry + 8,
+
+    // Content Value alignment (Right aligned, dark typography font)
+    const valSize = 13;
+    const valWidth = helvBold.widthOfTextAtSize(val, valSize);
+    page.drawText(val, {
+      x: cardX + cardW - 16 - valWidth,
+      y: textBaseY,
       size: valSize,
-      font: fontToUse,
-      color: rgb(0, 0, 0),
+      font: helvBold,
+      color: rgb(0.05, 0.05, 0.05),
     });
 
-    // separator line
+    // Light interior horizontal rule row separator dividers
     if (i < rows.length - 1) {
-      const lineY = ry - 6;
       page.drawLine({
-        start: { x: cardX + 8, y: lineY },
-        end: { x: cardX + cardW - 8, y: lineY },
-        thickness: 0.5,
-        color: rgb(0.92, 0.92, 0.94),
+        start: { x: cardX, y: currentRowTopY - rowH },
+        end: { x: cardX + cardW, y: currentRowTopY - rowH },
+        thickness: 1,
+        color: rgb(0.94, 0.95, 0.96),
       });
     }
 
-    ry -= rowH;
+    currentRowTopY -= rowH;
   }
 
-  // Footer small thank you
-  const footerY = cardY - 20;
-  page.drawText("Thank you for using Vodacom. Mpesa.", {
-    x: margin,
-    y: footerY,
-    size: 10,
-    font: helv,
-    color: rgb(0.4, 0.4, 0.4),
-  });
-
-  cursor = footerY - 24;
-
+  // File save compiler engine pipeline mappings
   const pdfBytes = await pdfDoc.save();
   const arrayBuffer = pdfBytes.buffer.slice(
     pdfBytes.byteOffset,
