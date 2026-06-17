@@ -41,7 +41,9 @@ function SettlePage() {
             </div>
             <h1 className="mt-6 text-2xl font-bold">Merchant paid</h1>
             <p className="text-sm text-muted-foreground mt-1">Settlement successful</p>
-            <p className="text-4xl font-bold text-brand mt-6">{fmt(updated.totalAmount, updated.currency)}</p>
+            <p className="text-4xl font-bold text-brand mt-6">
+              {fmt(updated.totalAmount, updated.currency)}
+            </p>
             <p className="text-xs text-muted-foreground mt-1">to {updated.merchantName}</p>
           </div>
 
@@ -49,16 +51,28 @@ function SettlePage() {
             <Row k="Merchant" v="Ocean Breeze Resturant" />
             <Row k="Till" v={updated.merchantName} mono />
             <Row k="Reference" v={updated.reference ?? "—"} mono />
-            <Row k="Contributors" v={String(updated.participants.filter(p => p.status === "PAID").length)} />
-            <Row k="Time" v={new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })} />
+            <Row
+              k="Contributors"
+              v={String(updated.participants.filter((p) => p.status === "PAID").length)}
+            />
+            <Row
+              k="Time"
+              v={new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
+            />
           </div>
 
           <div className="mt-auto pt-6 space-y-2">
-            <Button variant="outline" className="w-full h-12" onClick={() => alert("Receipt download (mock)")}>
+            <Button
+              variant="outline"
+              className="w-full h-12"
+              onClick={() => alert("Receipt download (mock)")}
+            >
               <Download className="size-4 mr-2" /> Download receipt
             </Button>
             <Link to="/">
-              <Button className="w-full h-12 bg-brand text-brand-foreground hover:bg-brand/90">Done</Button>
+              <Button className="w-full h-12 bg-brand text-brand-foreground hover:bg-brand/90">
+                Done
+              </Button>
             </Link>
           </div>
         </div>
@@ -68,7 +82,12 @@ function SettlePage() {
 
   return (
     <MobileShell hideNav hideFab>
-      <ScreenHeader title="Pay merchant" subtitle="Settle from escrow" back={`/collection/${id}`} variant="brand" />
+      <ScreenHeader
+        title="Pay merchant"
+        subtitle="Settle from escrow"
+        back={`/collection/${id}`}
+        variant="brand"
+      />
       <div className="px-5 pt-4 flex-1 flex flex-col">
         <div className="bg-gradient-to-br from-success/10 to-success/5 border border-success/20 rounded-2xl p-5 flex items-center gap-4">
           <div className="size-12 rounded-xl bg-success/15 text-success flex items-center justify-center">
@@ -86,7 +105,9 @@ function SettlePage() {
 
         <div className="mt-5 space-y-4">
           <div>
-            <Label className="text-xs font-medium text-muted-foreground">Merchant till number</Label>
+            <Label className="text-xs font-medium text-muted-foreground">
+              Merchant till number
+            </Label>
             <Input
               value={c.merchantName}
               onChange={(e) => setTill(e.target.value.replace(/\D/g, ""))}

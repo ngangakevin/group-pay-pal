@@ -14,7 +14,9 @@ export const Route = createFileRoute("/split-type")({
 function SplitTypePage() {
   const navigate = useNavigate();
   const { draft, setDraft } = useApp();
-  const [type, setType] = useState<"EQUAL" | "CUSTOM">((draft.splitType as "EQUAL" | "CUSTOM") ?? "EQUAL");
+  const [type, setType] = useState<"EQUAL" | "CUSTOM">(
+    (draft.splitType as "EQUAL" | "CUSTOM") ?? "EQUAL",
+  );
 
   if (!draft.totalAmount) return <Navigate to="/create" />;
   const total = draft.totalAmount ?? 0;
@@ -32,7 +34,12 @@ function SplitTypePage() {
 
   return (
     <MobileShell hideNav>
-      <ScreenHeader title="How to split?" subtitle="Step 2 of 4 · Split method" back="/create" variant="brand" />
+      <ScreenHeader
+        title="How to split?"
+        subtitle="Step 2 of 4 · Split method"
+        back="/create"
+        variant="brand"
+      />
       <Stepper step={2} />
       <div className="px-5 pt-4 space-y-3 flex-1">
         <Option
@@ -66,7 +73,8 @@ function SplitTypePage() {
             </div>
           ) : (
             <p className="mt-2 text-sm text-muted-foreground">
-              You'll set the amount each participant owes after adding them. Useful when shares are uneven.
+              You'll set the amount each participant owes after adding them. Useful when shares are
+              uneven.
             </p>
           )}
         </div>
@@ -84,8 +92,17 @@ function SplitTypePage() {
       </div>
 
       <FooterActions>
-        <Button variant="outline" className="flex-1 h-12" onClick={() => navigate({ to: "/create" })}>Back</Button>
-        <Button className="flex-[2] h-12 bg-brand text-brand-foreground hover:bg-brand/90" onClick={onContinue}>
+        <Button
+          variant="outline"
+          className="flex-1 h-12"
+          onClick={() => navigate({ to: "/create" })}
+        >
+          Back
+        </Button>
+        <Button
+          className="flex-[2] h-12 bg-brand text-brand-foreground hover:bg-brand/90"
+          onClick={onContinue}
+        >
           Continue
         </Button>
       </FooterActions>
@@ -94,8 +111,18 @@ function SplitTypePage() {
 }
 
 function Option({
-  icon, title, desc, selected, onClick,
-}: { icon: React.ReactNode; title: string; desc: string; selected: boolean; onClick: () => void }) {
+  icon,
+  title,
+  desc,
+  selected,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}
@@ -104,14 +131,24 @@ function Option({
         (selected ? "border-brand bg-brand/5" : "border-border bg-card")
       }
     >
-      <div className={"size-11 rounded-xl flex items-center justify-center " + (selected ? "bg-brand text-brand-foreground" : "bg-muted text-foreground")}>
+      <div
+        className={
+          "size-11 rounded-xl flex items-center justify-center " +
+          (selected ? "bg-brand text-brand-foreground" : "bg-muted text-foreground")
+        }
+      >
         {icon}
       </div>
       <div className="flex-1">
         <p className="font-semibold">{title}</p>
         <p className="text-xs text-muted-foreground">{desc}</p>
       </div>
-      <div className={"size-6 rounded-full border-2 flex items-center justify-center " + (selected ? "bg-brand border-brand text-brand-foreground" : "border-border")}>
+      <div
+        className={
+          "size-6 rounded-full border-2 flex items-center justify-center " +
+          (selected ? "bg-brand border-brand text-brand-foreground" : "border-border")
+        }
+      >
         {selected && <Check className="size-3.5" strokeWidth={3} />}
       </div>
     </button>

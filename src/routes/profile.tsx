@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronRight, CreditCard, HelpCircle, LogOut, Moon, Shield, Smartphone } from "lucide-react";
+import {
+  ChevronRight,
+  CreditCard,
+  HelpCircle,
+  LogOut,
+  Moon,
+  Shield,
+  Smartphone,
+} from "lucide-react";
 import { MobileShell, ScreenHeader, Avatar } from "@/components/MobileShell";
 import { Switch } from "@/components/ui/switch";
 import { useApp, fmt } from "@/lib/store";
@@ -40,7 +48,11 @@ function ProfilePage() {
 
         <Section title="Account">
           <Row icon={<CreditCard className="size-4" />} label="Payment methods" />
-          <Row icon={<Smartphone className="size-4" />} label="Linked M-Pesa number" hint="+258 84 ••• 5566" />
+          <Row
+            icon={<Smartphone className="size-4" />}
+            label="Linked M-Pesa number"
+            hint="+258 84 ••• 5566"
+          />
           <Row icon={<Shield className="size-4" />} label="Security & PIN" />
         </Section>
 
@@ -80,16 +92,32 @@ function Stat({ label, value }: { label: string; value: string }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mt-5">
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold mb-2 px-1">{title}</p>
-      <div className="bg-card border border-border rounded-2xl divide-y divide-border overflow-hidden">{children}</div>
+      <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold mb-2 px-1">
+        {title}
+      </p>
+      <div className="bg-card border border-border rounded-2xl divide-y divide-border overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 }
 
-function Row({ icon, label, hint, right }: { icon: React.ReactNode; label: string; hint?: string; right?: React.ReactNode }) {
+function Row({
+  icon,
+  label,
+  hint,
+  right,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  hint?: string;
+  right?: React.ReactNode;
+}) {
   return (
     <div className="flex items-center gap-3 p-4">
-      <div className="size-9 rounded-lg bg-muted text-foreground flex items-center justify-center">{icon}</div>
+      <div className="size-9 rounded-lg bg-muted text-foreground flex items-center justify-center">
+        {icon}
+      </div>
       <div className="flex-1">
         <p className="text-sm font-medium">{label}</p>
         {hint && <p className="text-xs text-muted-foreground">{hint}</p>}

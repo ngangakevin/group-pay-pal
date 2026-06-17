@@ -75,7 +75,10 @@ function PayPage() {
               <Button
                 variant="ghost"
                 className="w-full h-12 text-muted-foreground"
-                onClick={() => { declineShare(id, pid); navigate({ to: "/collection/$id", params: { id } }); }}
+                onClick={() => {
+                  declineShare(id, pid);
+                  navigate({ to: "/collection/$id", params: { id } });
+                }}
               >
                 Decline
               </Button>
@@ -86,7 +89,12 @@ function PayPage() {
 
       {step === "pin" && (
         <>
-          <ScreenHeader title="Enter M-Pesa PIN" subtitle={`Paying ${fmt(p.shareAmount, c.currency)}`} back variant="brand" />
+          <ScreenHeader
+            title="Enter M-Pesa PIN"
+            subtitle={`Paying ${fmt(p.shareAmount, c.currency)}`}
+            back
+            variant="brand"
+          />
           <div className="px-5 pt-6 flex-1 flex flex-col">
             <div className="flex justify-center gap-3 mt-4">
               {[0, 1, 2, 3].map((i) => (
@@ -105,8 +113,10 @@ function PayPage() {
 
             <div className="mt-auto">
               <div className="grid grid-cols-3 gap-2 select-none">
-                {["1","2","3","4","5","6","7","8","9","","0","del"].map((k, i) =>
-                  k === "" ? <div key={i} /> : (
+                {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"].map((k, i) =>
+                  k === "" ? (
+                    <div key={i} />
+                  ) : (
                     <button
                       key={i}
                       onClick={() => press(k)}
