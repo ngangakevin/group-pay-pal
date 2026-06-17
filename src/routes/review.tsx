@@ -24,8 +24,8 @@ function ReviewPage() {
 
   const onStart = () => {
     const id = createCollection();
-    navigate({ to: "/" });
-    toast.success("Collection started", { description: "Invitations sent to participants" });
+    navigate({ to: "/collection/$id", params: { id } });
+    // toast.success("Collection started", { description: "Invitations sent to participants" });
   };
 
   return (
@@ -87,8 +87,17 @@ function ReviewPage() {
       </div>
 
       <FooterActions>
-        <Button variant="outline" className="flex-1 h-12" onClick={() => navigate({ to: "/participants" })}>Edit</Button>
-        <Button className="flex-[2] h-12 bg-brand text-brand-foreground hover:bg-brand/90" onClick={onStart}>
+        <Button
+          variant="outline"
+          className="flex-1 h-12"
+          onClick={() => navigate({ to: "/participants" })}
+        >
+          Edit
+        </Button>
+        <Button
+          className="flex-[2] h-12 bg-brand text-brand-foreground hover:bg-brand/90"
+          onClick={onStart}
+        >
           Start collection
         </Button>
       </FooterActions>
