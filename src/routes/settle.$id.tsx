@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useApp, fmt } from "@/lib/store";
+import { createReceiptPdf } from "@/lib/receipt";
 
 export const Route = createFileRoute("/settle/$id")({
   head: () => ({ meta: [{ title: "Settle Merchant — Pagamos" }] }),
@@ -65,7 +66,26 @@ function SettlePage() {
             <Button
               variant="outline"
               className="w-full h-12"
-              onClick={() => alert("Receipt download (mock)")}
+              onClick={async () => {
+                const updated = useApp.getState().collections.find((x) => x.id === id)!;
+                const blob = await createReceiptPdf({
+                  merchantName: updated.merchantName,
+                  till: updated.merchantName,
+                  amount: updated.totalAmount,
+                  currency: updated.currency,
+                  reference: updated.reference,
+                  contributors: updated.participants.filter((p) => p.status === "PAID").length,
+                  time: new Date().toLocaleString(),
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `pagamos-receipt-${updated.id}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+              }}
             >
               <Download className="size-4 mr-2" /> Download receipt
             </Button>
