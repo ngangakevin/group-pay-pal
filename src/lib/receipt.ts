@@ -24,22 +24,20 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   let cursor = height - margin;
 
   // ==========================================
-  // 1. DRAW SUCCESS CHECKMARK DIAL (VECTOR)
+  // 1. SUCCESS CHECKMARK DIAL (VECTOR)
   // ==========================================
   const circleCenterX = width / 2;
   const circleY = cursor - 60;
   const circleRadius = 45;
 
-  // Outer green circle background
   page.drawCircle({
     x: circleCenterX,
     y: circleY,
     radius: circleRadius,
-    color: rgb(0.29, 0.68, 0.43), // Rich green matching the screenshot
+    color: rgb(0.29, 0.68, 0.43),
   });
 
-  // Pure mathematical vector lines to draw the white checkmark inside the circle
-  // This bypasses font-encoding errors entirely
+  // Vector checkmark inside the circle
   page.drawLine({
     start: { x: circleCenterX - 18, y: circleY - 2 },
     end: { x: circleCenterX - 5, y: circleY - 15 },
@@ -56,7 +54,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   cursor = circleY - circleRadius - 30;
 
   // ==========================================
-  // 2. TEXT TYPOGRAPHY LAYER
+  // 2. TYPOGRAPHY LAYER
   // ==========================================
 
   // "Merchant paid" header
@@ -85,7 +83,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   });
   cursor -= 40;
 
-  // "MZN 5,000" big red amount
+  // Big amount string
   const amountText =
     `${data.currency ?? "MZN"} ${Number(data.amount).toLocaleString("en-US", { minimumFractionDigits: 0 })}`.trim();
   const amountSize = 38;
@@ -99,7 +97,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   });
   cursor -= amountSize + 8;
 
-  // "to 1234" context label
+  // "to merchant" subtitle context
   const toText = `to ${data.till ?? "—"}`;
   const toSize = 11;
   const toWidth = helv.widthOfTextAtSize(toText, toSize);
@@ -113,11 +111,11 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   cursor -= toSize + 35;
 
   // ==========================================
-  // 3. ROUNDED RECEIPT DETAILS CARD
+  // 3. TRUE ROUNDED DETAILS CARD MAPPING
   // ==========================================
   const cardX = margin;
   const cardW = width - margin * 2;
-  const rowH = 48; // Roomy height matching design spacing
+  const rowH = 48;
 
   const rows = [
     ["Merchant", data.merchantName],
@@ -129,9 +127,10 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
 
   const cardH = rows.length * rowH;
   const cardY = cursor - cardH;
-  const radius = 16; // Corner rounding matching the border layout
+  const r = 16; // Corner radius matching your UI
+  const borderColor = rgb(0.88, 0.89, 0.91);
 
-  // Draw card background
+  // Draw the central white background block body
   page.drawRectangle({
     x: cardX,
     y: cardY,
@@ -140,58 +139,91 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     color: rgb(1, 1, 1),
   });
 
-  // Render vector paths for true rounded borders
-  // Top left
-  page.drawCircle({ x: cardX + radius, y: cardY + cardH - radius, radius, color: rgb(1, 1, 1) });
-  // Top right
-  page.drawCircle({
-    x: cardX + cardW - radius,
-    y: cardY + cardH - radius,
-    radius,
-    color: rgb(1, 1, 1),
-  });
-  // Bottom left
-  page.drawCircle({ x: cardX + radius, y: cardY + radius, radius, color: rgb(1, 1, 1) });
-  // Bottom right
-  page.drawCircle({ x: cardX + cardW - radius, y: cardY + radius, radius, color: rgb(1, 1, 1) });
+  // Clear out the harsh square corners to prepare for bezier drawing masks
+  const clearSquareCorner = (cx: number, cy: number) => {
+    page.drawRectangle({ x: cx, y: cy, width: r, height: r, color: rgb(1, 1, 1) });
+  };
+  clearSquareCorner(cardX, cardY + cardH - r);
+  clearSquareCorner(cardX + cardW - r, cardY + cardH - r);
+  clearSquareCorner(cardX, cardY);
+  clearSquareCorner(cardX + cardW - r, cardY);
 
-  // Draw outer outline border strokes around corners manually to support complete styles
-  const borderColor = rgb(0.88, 0.89, 0.91);
+  // Smooth out and draw true curved vector corner borders
+  // Top-Left Curve
+  page.drawBezierCurve({
+    start: { x: cardX, y: cardY + cardH - r },
+    control1: { x: cardX, y: cardY + cardH },
+    control2: { x: cardX + r, y: cardY + cardH },
+    end: { x: cardX + r, y: cardY + cardH },
+    thickness: 1,
+    color: borderColor,
+  });
+  // Top-Right Curve
+  page.drawBezierCurve({
+    start: { x: cardX + cardW - r, y: cardY + cardH },
+    control1: { x: cardX + cardW, y: cardY + cardH },
+    control2: { x: cardX + cardW, y: cardY + cardH - r },
+    end: { x: cardX + cardW, y: cardY + cardH - r },
+    thickness: 1,
+    color: borderColor,
+  });
+  // Bottom-Right Curve
+  page.drawBezierCurve({
+    start: { x: cardX + cardW, y: cardY + r },
+    control1: { x: cardX + cardW, y: cardY },
+    control2: { x: cardX + cardW - r, y: cardY },
+    end: { x: cardX + cardW - r, y: cardY },
+    thickness: 1,
+    color: borderColor,
+  });
+  // Bottom-Left Curve
+  page.drawBezierCurve({
+    start: { x: cardX + r, y: cardY },
+    control1: { x: cardX, y: cardY },
+    control2: { x: cardX, y: cardY + r },
+    end: { x: cardX, y: cardY + r },
+    thickness: 1,
+    color: borderColor,
+  });
+
+  // Flat straight boundary outline line rules linking the curves
   page.drawLine({
-    start: { x: cardX + radius, y: cardY + cardH },
-    end: { x: cardX + cardW - radius, y: cardY + cardH },
+    start: { x: cardX + r, y: cardY + cardH },
+    end: { x: cardX + cardW - r, y: cardY + cardH },
     thickness: 1,
     color: borderColor,
   });
   page.drawLine({
-    start: { x: cardX + radius, y: cardY },
-    end: { x: cardX + cardW - radius, y: cardY },
+    start: { x: cardX + r, y: cardY },
+    end: { x: cardX + cardW - r, y: cardY },
     thickness: 1,
     color: borderColor,
   });
   page.drawLine({
-    start: { x: cardX, y: cardY + radius },
-    end: { x: cardX, y: cardY + cardH - radius },
+    start: { x: cardX, y: cardY + r },
+    end: { x: cardX, y: cardY + cardH - r },
     thickness: 1,
     color: borderColor,
   });
   page.drawLine({
-    start: { x: cardX + cardW, y: cardY + radius },
-    end: { x: cardX + cardW, y: cardY + cardH - radius },
+    start: { x: cardX + cardW, y: cardY + r },
+    end: { x: cardX + cardW, y: cardY + cardH - r },
     thickness: 1,
     color: borderColor,
   });
 
   // ==========================================
-  // 4. MAP DATA ROWS INSIDE CONTAINER
+  // 4. DATA ROW ALIGNMENT EXECUTION
   // ==========================================
   let currentRowTopY = cardY + cardH;
 
   for (let i = 0; i < rows.length; i++) {
     const [label, val] = rows[i];
+
+    // Precise typography baseline centering offset inside row container
     const textBaseY = currentRowTopY - rowH / 2 - 4;
 
-    // Label styling (Left aligned, muted gray text)
+    // Label alignment (Stays left-aligned at exactly 16px inset padding)
     page.drawText(label, {
       x: cardX + 16,
       y: textBaseY,
@@ -200,18 +232,18 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
       color: rgb(0.45, 0.48, 0.52),
     });
 
-    // Content Value alignment (Right aligned, dark typography font)
+    // Content alignment (Calculates width dynamically to snap right at 16px inset padding)
     const valSize = 13;
     const valWidth = helvBold.widthOfTextAtSize(val, valSize);
     page.drawText(val, {
-      x: cardX + cardW - 16 - valWidth,
+      x: cardX + cardW - 16 - valWidth, // 👈 Perfect alignment bounding rule
       y: textBaseY,
       size: valSize,
       font: helvBold,
       color: rgb(0.05, 0.05, 0.05),
     });
 
-    // Light interior horizontal rule row separator dividers
+    // Interior structural dividing rules
     if (i < rows.length - 1) {
       page.drawLine({
         start: { x: cardX, y: currentRowTopY - rowH },
@@ -224,7 +256,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     currentRowTopY -= rowH;
   }
 
-  // File save compiler engine pipeline mappings
+  // Final compile operations
   const pdfBytes = await pdfDoc.save();
   const arrayBuffer = pdfBytes.buffer.slice(
     pdfBytes.byteOffset,
