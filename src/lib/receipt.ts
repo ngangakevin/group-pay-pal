@@ -123,10 +123,10 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
 
   const cardH = rows.length * rowH;
   const cardY = cursor - cardH;
-  const r = 16; // Corner radius
+  const r = 16;
   const borderColor = rgb(0.88, 0.89, 0.91);
 
-  // Draw white background
+  // Background rect block fills
   page.drawRectangle({
     x: cardX + r,
     y: cardY,
@@ -141,25 +141,23 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     height: cardH - r * 2,
     color: rgb(1, 1, 1),
   });
-  // Fill inside corners
   page.drawCircle({ x: cardX + r, y: cardY + r, radius: r, color: rgb(1, 1, 1) });
   page.drawCircle({ x: cardX + cardW - r, y: cardY + r, radius: r, color: rgb(1, 1, 1) });
   page.drawCircle({ x: cardX + r, y: cardY + cardH - r, radius: r, color: rgb(1, 1, 1) });
   page.drawCircle({ x: cardX + cardW - r, y: cardY + cardH - r, radius: r, color: rgb(1, 1, 1) });
 
-  // Single SVG path command to trace perfect borders with rounded corners
-  // M = Move to, L = Line to, A = Arc to (for true rounded corners)
-  const borderPath = `
-    M ${cardX + r} ${cardY} 
-    L ${cardX + cardW - r} ${cardY} 
-    A ${r} ${r} 0 0 0 ${cardX + cardW} ${cardY + r} 
-    L ${cardX + cardW} ${cardY + cardH - r} 
-    A ${r} ${r} 0 0 0 ${cardX + cardW - r} ${cardY + cardH} 
-    L ${cardX + r} ${cardY + cardH} 
-    A ${r} ${r} 0 0 0 ${cardX} ${cardY + cardH - r} 
-    L ${cardX} ${cardY + r} 
-    A ${r} ${r} 0 0 0 ${cardX + r} ${cardY} Z
-  `.trim();
+  // 🚨 FIXED: Explicitly string-clean numeric paths. No line breaks or floating spaces.
+  const x0 = cardX.toFixed(1);
+  const x1 = (cardX + r).toFixed(1);
+  const x2 = (cardX + cardW - r).toFixed(1);
+  const x3 = (cardX + cardW).toFixed(1);
+
+  const y0 = cardY.toFixed(1);
+  const y1 = (cardY + r).toFixed(1);
+  const y2 = (cardY + cardH - r).toFixed(1);
+  const y3 = (cardY + cardH).toFixed(1);
+
+  const borderPath = `M ${x1} ${y0} L ${x2} ${y0} A ${r} ${r} 0 0 0 ${x3} ${y1} L ${x3} ${y2} A ${r} ${r} 0 0 0 ${x2} ${y3} L ${x1} ${y3} A ${r} ${r} 0 0 0 ${x0} ${y2} L ${x0} ${y1} A ${r} ${r} 0 0 0 ${x1} ${y0} Z`;
 
   page.drawSvgPath(borderPath, {
     x: 0,
@@ -177,7 +175,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     const [label, val] = rows[i];
     const textBaseY = currentRowTopY - rowH / 2 - 4;
 
-    // Left label alignment
     page.drawText(label, {
       x: cardX + 16,
       y: textBaseY,
@@ -186,7 +183,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
       color: rgb(0.45, 0.48, 0.52),
     });
 
-    // Right value alignment (snaps precisely 16px from the right boundary edge)
     const valSize = 13;
     const valWidth = helvBold.widthOfTextAtSize(val, valSize);
     page.drawText(val, {
@@ -197,7 +193,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
       color: rgb(0.05, 0.05, 0.05),
     });
 
-    // Inner dividing borders between table rows
     if (i < rows.length - 1) {
       page.drawLine({
         start: { x: cardX, y: currentRowTopY - rowH },
@@ -210,7 +205,6 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
     currentRowTopY -= rowH;
   }
 
-  // Compile layout
   const pdfBytes = await pdfDoc.save();
   const arrayBuffer = pdfBytes.buffer.slice(
     pdfBytes.byteOffset,
