@@ -1,13 +1,28 @@
 import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Bell, MoreVertical, Send, Trash2, UserMinus, XCircle, CheckCircle2, Clock, X } from "lucide-react";
+import {
+  Bell,
+  MoreVertical,
+  Send,
+  Trash2,
+  UserMinus,
+  XCircle,
+  CheckCircle2,
+  Clock,
+  X,
+  Download,
+} from "lucide-react";
 import { MobileShell, ScreenHeader, Avatar } from "@/components/MobileShell";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useApp, fmt, type ParticipantStatus } from "@/lib/store";
+import { createReceiptPdf } from "@/lib/receipt";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/collection/$id")({
@@ -55,7 +70,12 @@ function CollectionPage() {
               <MoreVertical className="size-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => { cancelCollection(id); toast("Collection cancelled"); }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  cancelCollection(id);
+                  toast("Collection cancelled");
+                }}
+              >
                 <XCircle className="mr-2 size-4" /> Cancel collection
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -68,7 +88,9 @@ function CollectionPage() {
           <div className="flex items-end justify-between">
             <div>
               <p className="text-xs text-muted-foreground">Collected</p>
-              <p className="text-3xl font-bold text-brand mt-0.5">{fmt(c.collectedAmount, c.currency)}</p>
+              <p className="text-3xl font-bold text-brand mt-0.5">
+                {fmt(c.collectedAmount, c.currency)}
+              </p>
             </div>
             <p className="text-sm text-muted-foreground">of {fmt(c.totalAmount, c.currency)}</p>
           </div>
@@ -107,6 +129,37 @@ function CollectionPage() {
             <CheckCircle2 className="size-7 text-success mx-auto" />
             <p className="font-semibold mt-1">Merchant settled</p>
             <p className="text-xs text-muted-foreground">Ref: {c.reference}</p>
+            <div className="mt-3">
+              <Button
+                size="sm"
+                variant="outline"
+                className="inline-flex items-center gap-2"
+                onClick={async () => {
+                  const blob = await createReceiptPdf({
+                    merchantName: c.merchantName,
+                    till: c.merchantTill ?? c.merchantName,
+                    amount: c.totalAmount,
+                    currency: c.currency,
+                    reference: c.reference,
+                    contributors: c.participants.filter((p) => p.status === "PAID").length,
+                    time: new Date().toLocaleString("en-GB", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }),
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `pagamos-receipt-${c.id}.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  URL.revokeObjectURL(url);
+                }}
+              >
+                <Download className="size-4" /> Download receipt
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -132,7 +185,12 @@ function CollectionPage() {
                     <MoreVertical className="size-4 text-muted-foreground" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => { remindParticipant(id, p.id); toast(`Reminder sent to ${p.name}`); }}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        remindParticipant(id, p.id);
+                        toast(`Reminder sent to ${p.name}`);
+                      }}
+                    >
                       <Bell className="mr-2 size-4" /> Send reminder
                     </DropdownMenuItem>
                     <Link to="/pay/$id/$pid" params={{ id, pid: p.id }}>
@@ -146,12 +204,8 @@ function CollectionPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-              {p.status === "PAID" && (
-                <CheckCircle2 className="size-5 text-success" />
-              )}
-              {p.status === "DECLINED" && (
-                <X className="size-5 text-muted-foreground" />
-              )}
+              {p.status === "PAID" && <CheckCircle2 className="size-5 text-success" />}
+              {p.status === "DECLINED" && <X className="size-5 text-muted-foreground" />}
             </div>
           ))}
         </div>
@@ -169,7 +223,15 @@ function CollectionPage() {
   );
 }
 
-function Pill({ count, label, tone }: { count: number; label: string; tone: "success" | "warning" | "muted" }) {
+function Pill({
+  count,
+  label,
+  tone,
+}: {
+  count: number;
+  label: string;
+  tone: "success" | "warning" | "muted";
+}) {
   const cls = {
     success: "bg-success/10 text-success",
     warning: "bg-warning/15 text-warning-foreground",
@@ -185,13 +247,27 @@ function Pill({ count, label, tone }: { count: number; label: string; tone: "suc
 
 function StatusBadge({ status }: { status: ParticipantStatus }) {
   const map = {
-    PAID: { cls: "bg-success/15 text-success", icon: <CheckCircle2 className="size-3" />, label: "Paid" },
-    PENDING: { cls: "bg-warning/15 text-warning-foreground", icon: <Clock className="size-3" />, label: "Pending" },
-    DECLINED: { cls: "bg-muted text-muted-foreground", icon: <X className="size-3" />, label: "Declined" },
+    PAID: {
+      cls: "bg-success/15 text-success",
+      icon: <CheckCircle2 className="size-3" />,
+      label: "Paid",
+    },
+    PENDING: {
+      cls: "bg-warning/15 text-warning-foreground",
+      icon: <Clock className="size-3" />,
+      label: "Pending",
+    },
+    DECLINED: {
+      cls: "bg-muted text-muted-foreground",
+      icon: <X className="size-3" />,
+      label: "Declined",
+    },
     INVITED: { cls: "bg-brand/10 text-brand", icon: <Send className="size-3" />, label: "Invited" },
   }[status];
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${map.cls}`}>
+    <span
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${map.cls}`}
+    >
       {map.icon} {map.label}
     </span>
   );
