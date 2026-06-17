@@ -44,7 +44,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
   });
   // checkmark using a glyph
   const checkSize = 42;
-  const checkText = "✓";
+  const checkText = "✅";
   const checkWidth = helvBold.widthOfTextAtSize(checkText, checkSize);
   page.drawText(checkText, {
     x: circleCenterX - checkWidth / 2,
@@ -182,7 +182,7 @@ export async function createReceiptPdf(data: ReceiptData): Promise<Blob> {
 
   // Footer small thank you
   const footerY = cardY - 20;
-  page.drawText("Thank you for using Pagamos.", {
+  page.drawText("Thank you for using Vodacom. Mpesa.", {
     x: margin,
     y: footerY,
     size: 10,
