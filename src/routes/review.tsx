@@ -25,12 +25,17 @@ function ReviewPage() {
   const onStart = () => {
     const id = createCollection();
     navigate({ to: "/collection/$id", params: { id } });
-    // toast.success("Collection started", { description: "Invitations sent to participants" });
+    toast.success("Collection started", { description: "Invitations sent to participants" });
   };
 
   return (
     <MobileShell hideNav>
-      <ScreenHeader title="Review & confirm" subtitle="Step 4 of 4 · Final check" back="/participants" variant="brand" />
+      <ScreenHeader
+        title="Review & confirm"
+        subtitle="Step 4 of 4 · Final check"
+        back="/participants"
+        variant="brand"
+      />
       <Stepper step={4} />
 
       <div className="px-5 pt-4 space-y-4 flex-1">
@@ -46,7 +51,9 @@ function ReviewPage() {
             </div>
           </div>
           {draft.description && (
-            <p className="text-sm text-muted-foreground mt-3 border-t border-border pt-3">{draft.description}</p>
+            <p className="text-sm text-muted-foreground mt-3 border-t border-border pt-3">
+              {draft.description}
+            </p>
           )}
         </div>
 
@@ -57,7 +64,8 @@ function ReviewPage() {
           <div className="flex-1">
             <p className="font-semibold text-sm">Escrow wallet ready</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Funds collected from {selected.length} participants will be held securely until you settle the merchant.
+              Funds collected from {selected.length} participants will be held securely until you
+              settle the merchant.
             </p>
           </div>
         </div>
@@ -96,7 +104,13 @@ function ReviewPage() {
         </Button>
         <Button
           className="flex-[2] h-12 bg-brand text-brand-foreground hover:bg-brand/90"
-          onClick={onStart}
+          onClick={() => {
+            const id = createCollection();
+            navigate({ to: "/collection/$id", params: { id } });
+            toast.success("Collection started", {
+              description: "Invitations sent to participants",
+            });
+          }}
         >
           Start collection
         </Button>
